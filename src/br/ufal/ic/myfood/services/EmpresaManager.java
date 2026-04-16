@@ -1,4 +1,6 @@
-package br.ufal.ic.myfood.models;
+package br.ufal.ic.myfood.services;
+
+import br.ufal.ic.myfood.models.Empresa;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

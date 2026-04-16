@@ -1,15 +1,9 @@
 package br.ufal.ic.myfood;
 
-import br.ufal.ic.myfood.exceptions.UsuarioJaExisteException;
-import br.ufal.ic.myfood.exceptions.UsuarioNaoExisteException;
-import br.ufal.ic.myfood.models.EmpresaManager;
-import br.ufal.ic.myfood.models.ProdutoManager;
-import br.ufal.ic.myfood.models.Usuario;
-import br.ufal.ic.myfood.models.UsuarioManager;
+import br.ufal.ic.myfood.services.EmpresaManager;
+import br.ufal.ic.myfood.services.ProdutoManager;
+import br.ufal.ic.myfood.services.UsuarioManager;
 import br.ufal.ic.myfood.utils.PersistenciaXML;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Facade {
 
@@ -18,13 +12,13 @@ public class Facade {
     private ProdutoManager produtoManager;
 
     public Facade() {
-        UsuarioManager uManagerCarregado = (UsuarioManager) PersistenciaXML.carregar("usuarios.xml");
+        UsuarioManager uManagerCarregado = (UsuarioManager) PersistenciaXML.carregar("data/usuarios.xml");
         this.userManager = (uManagerCarregado != null) ? uManagerCarregado : new UsuarioManager();
 
-        EmpresaManager eManagerCarregado = (EmpresaManager) PersistenciaXML.carregar("empresas.xml");
+        EmpresaManager eManagerCarregado = (EmpresaManager) PersistenciaXML.carregar("data/empresas.xml");
         this.empresaManager = (eManagerCarregado != null) ? eManagerCarregado : new EmpresaManager();
 
-        ProdutoManager pManagerCarregado = (ProdutoManager) PersistenciaXML.carregar("produtos.xml");
+        ProdutoManager pManagerCarregado = (ProdutoManager) PersistenciaXML.carregar("data/produtos.xml");
         this.produtoManager = (pManagerCarregado != null) ? pManagerCarregado : new ProdutoManager();
     }
 
@@ -34,9 +28,9 @@ public class Facade {
         this.empresaManager.zerarSistema();
         this.produtoManager.zerarSistema();
 
-        PersistenciaXML.salvar(this.userManager, "usuarios.xml");
-        PersistenciaXML.salvar(this.empresaManager, "empresas.xml");
-        PersistenciaXML.salvar(this.produtoManager, "produtos.xml");
+        PersistenciaXML.salvar(this.userManager, "data/usuarios.xml");
+        PersistenciaXML.salvar(this.empresaManager, "data/empresas.xml");
+        PersistenciaXML.salvar(this.produtoManager, "data/produtos.xml");
     }
 
     public String getAtributoUsuario(int id, String atributo) throws Exception {
@@ -58,9 +52,9 @@ public class Facade {
     }
 
     public void encerrarSistema() {
-        PersistenciaXML.salvar(this.userManager, "usuarios.xml");
-        PersistenciaXML.salvar(this.empresaManager, "empresas.xml");
-        PersistenciaXML.salvar(this.produtoManager, "produtos.xml");
+        PersistenciaXML.salvar(this.userManager, "data/usuarios.xml");
+        PersistenciaXML.salvar(this.empresaManager, "data/empresas.xml");
+        PersistenciaXML.salvar(this.produtoManager, "data/produtos.xml");
     }
 
     public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, String tipoCozinha) throws Exception {

@@ -1,11 +1,12 @@
-package br.ufal.ic.myfood.models;
+package br.ufal.ic.myfood.services;
 
 import br.ufal.ic.myfood.exceptions.UsuarioJaExisteException;
 import br.ufal.ic.myfood.exceptions.UsuarioNaoExisteException;
+import br.ufal.ic.myfood.models.Cliente;
+import br.ufal.ic.myfood.models.Dono;
+import br.ufal.ic.myfood.models.Usuario;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class UsuarioManager {
@@ -28,14 +29,14 @@ public class UsuarioManager {
     }
 
     public void criarUsuario(String nome, String email, String senha, String endereco) throws Exception {
-        Customer novoCliente = new Customer(proximoId, nome, email, senha, endereco);
+        Cliente novoCliente = new Cliente(proximoId, nome, email, senha, endereco);
         verificarEmailExistente(email);
         this.usuarios.put(proximoId, novoCliente);
         proximoId++;
     }
 
     public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) throws Exception {
-        Owner novoDono = new Owner(proximoId, nome, email, senha, endereco, cpf);
+        Dono novoDono = new Dono(proximoId, nome, email, senha, endereco, cpf);
         verificarEmailExistente(email);
         this.usuarios.put(proximoId, novoDono);
         proximoId++;

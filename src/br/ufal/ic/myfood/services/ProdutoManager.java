@@ -1,4 +1,6 @@
-package br.ufal.ic.myfood.models;
+package br.ufal.ic.myfood.services;
+
+import br.ufal.ic.myfood.models.Produto;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -1,9 +1,9 @@
 package br.ufal.ic.myfood.models;
 
-public class Owner extends Usuario{
+public class Dono extends Usuario{
     private String cpf;
 
-    public Owner(int id, String nome, String email, String senha, String endereco, String cpf) throws Exception {
+    public Dono(int id, String nome, String email, String senha, String endereco, String cpf) throws Exception {
         super(id, nome, email, senha, endereco);
 
         if (cpf == null || cpf.trim().isEmpty() || cpf.length() != 14) {
@@ -13,7 +13,9 @@ public class Owner extends Usuario{
         this.cpf = cpf;
     }
 
-    public Owner() {}
+    public Dono() {
+        super();
+    }
 
     @Override
     public String getAtributo(String atributo) throws Exception{

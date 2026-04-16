@@ -3,6 +3,7 @@ package br.ufal.ic.myfood.utils;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
+import java.beans.ExceptionListener;
 
 public class PersistenciaXML {
 
@@ -17,6 +18,17 @@ public class PersistenciaXML {
             }
 
             try (XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(arquivo)))) {
+
+
+                encoder.setExceptionListener(new java.beans.ExceptionListener() {
+                    @Override
+                    public void exceptionThrown(Exception e) {
+                        System.err.println("O XML ACHOU UM CULPADO: " + e.getMessage());
+                        // e.printStackTrace(); // Descomente isso se quiser ver a linha exata do erro
+                    }
+                });
+                // -----------------------
+
                 encoder.writeObject(objeto);
             }
 
