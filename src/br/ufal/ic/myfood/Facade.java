@@ -1,15 +1,18 @@
 package br.ufal.ic.myfood;
 
 import br.ufal.ic.myfood.services.EmpresaManager;
+import br.ufal.ic.myfood.services.PedidoManager;
 import br.ufal.ic.myfood.services.ProdutoManager;
 import br.ufal.ic.myfood.services.UsuarioManager;
 import br.ufal.ic.myfood.utils.PersistenciaXML;
+import br.ufal.ic.myfood.models.Produto;
 
 public class Facade {
 
     UsuarioManager userManager;
     EmpresaManager empresaManager;
     private ProdutoManager produtoManager;
+    private PedidoManager pedidoManager;
 
     public Facade() {
         UsuarioManager uManagerCarregado = (UsuarioManager) PersistenciaXML.carregar("data/usuarios.xml");
@@ -20,6 +23,9 @@ public class Facade {
 
         ProdutoManager pManagerCarregado = (ProdutoManager) PersistenciaXML.carregar("data/produtos.xml");
         this.produtoManager = (pManagerCarregado != null) ? pManagerCarregado : new ProdutoManager();
+
+        PedidoManager peManagerCarregado = (PedidoManager) PersistenciaXML.carregar("data/pedidos.xml");
+        this.pedidoManager = (peManagerCarregado != null) ? peManagerCarregado : new PedidoManager();
     }
 
 
@@ -27,10 +33,12 @@ public class Facade {
         this.userManager.zerarSistema();
         this.empresaManager.zerarSistema();
         this.produtoManager.zerarSistema();
+        this.pedidoManager.zerarSistema();
 
         PersistenciaXML.salvar(this.userManager, "data/usuarios.xml");
         PersistenciaXML.salvar(this.empresaManager, "data/empresas.xml");
         PersistenciaXML.salvar(this.produtoManager, "data/produtos.xml");
+        PersistenciaXML.salvar(this.pedidoManager, "data/pedidos.xml");
     }
 
     public String getAtributoUsuario(int id, String atributo) throws Exception {
@@ -55,6 +63,7 @@ public class Facade {
         PersistenciaXML.salvar(this.userManager, "data/usuarios.xml");
         PersistenciaXML.salvar(this.empresaManager, "data/empresas.xml");
         PersistenciaXML.salvar(this.produtoManager, "data/produtos.xml");
+        PersistenciaXML.salvar(this.pedidoManager, "data/pedidos.xml");
     }
 
     public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, String tipoCozinha) throws Exception {
@@ -112,5 +121,50 @@ public class Facade {
         }
 
         return this.produtoManager.listarProdutos(empresa);
+    }
+
+    public int criarPedido(int cliente, int empresa) throws Exception {
+        if (userManager.getUsuarios().get(cliente) instanceof br.ufal.ic.myfood.models.Dono) {
+            throw new Exception("Dono de empresa nao pode fazer um pedido");
+        }
+
+        return pedidoManager.criarPedido(cliente, empresa);
+    }
+
+    public int getNumeroPedido(int cliente, int empresa, int indice) throws Exception {
+        return pedidoManager.getNumeroPedido(cliente, empresa, indice);
+    }
+
+    public void adicionarProduto(int numero, int produtoId) throws Exception {
+        Produto prod = produtoManager.getProdutoInterno(produtoId);
+        pedidoManager.adicionarProduto(numero, prod);
+    }
+
+    public String getPedidos(int numero, String atributo) throws Exception {
+        if (atributo == null || atributo.trim().isEmpty()) {
+            throw new Exception("Atributo invalido");
+        }
+
+        if (atributo.equals("cliente")) {
+            int idCliente = pedidoManager.getIdClienteDoPedido(numero);
+            return userManager.getAtributoUsuario(idCliente, "nome");
+        }
+        if (atributo.equals("empresa")) {
+            int idEmpresa = pedidoManager.getIdEmpresaDoPedido(numero);
+            return empresaManager.getAtributoEmpresa(idEmpresa, "nome");
+        }
+
+        return pedidoManager.getAtributoPedido(numero, atributo);
+    }
+
+    public void fecharPedido(int numero) throws Exception {
+        pedidoManager.fecharPedido(numero);
+    }
+
+    public void removerProduto(int pedido, String nomeProduto) throws Exception {
+        if (nomeProduto == null || nomeProduto.trim().isEmpty()) {
+            throw new Exception("Produto invalido");
+        }
+        pedidoManager.removerProduto(pedido, nomeProduto);
     }
 }

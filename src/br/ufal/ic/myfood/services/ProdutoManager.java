@@ -60,6 +60,13 @@ public class ProdutoManager {
         }
         throw new Exception("Produto nao encontrado");
     }
+    public Produto getProdutoInterno(int id) throws Exception {
+        Produto p = this.produtos.get(id);
+        if (p == null) {
+            throw new Exception("Produto nao encontrado");
+        }
+        return p;
+    }
 
     public String getProduto(String nome, int empresa, String atributo) throws Exception {
         Produto p = getProdutoInterno(nome, empresa);
@@ -90,6 +97,12 @@ public class ProdutoManager {
         sb.append("]}");
 
         return sb.toString();
+    }
+
+    public Produto getProdutoPorId(int id) throws Exception {
+        Produto p = produtos.get(id);
+        if (p == null) throw new Exception("Produto nao encontrado");
+        return p;
     }
 
     public void zerarSistema() {
