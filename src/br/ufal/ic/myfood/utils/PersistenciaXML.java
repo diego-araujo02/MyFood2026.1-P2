@@ -10,7 +10,6 @@ public class PersistenciaXML {
     public static void salvar(Object objeto, String caminhoArquivo) {
         try {
             File arquivo = new File(caminhoArquivo);
-
             File diretorio = arquivo.getParentFile();
 
             if (diretorio != null && !diretorio.exists()) {
@@ -18,17 +17,6 @@ public class PersistenciaXML {
             }
 
             try (XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(arquivo)))) {
-
-
-                encoder.setExceptionListener(new java.beans.ExceptionListener() {
-                    @Override
-                    public void exceptionThrown(Exception e) {
-                        System.err.println("O XML ACHOU UM CULPADO: " + e.getMessage());
-                        // e.printStackTrace(); // Descomente isso se quiser ver a linha exata do erro
-                    }
-                });
-                // -----------------------
-
                 encoder.writeObject(objeto);
             }
 
