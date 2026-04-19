@@ -1,8 +1,8 @@
 # Relatório do Projeto - MyFood (AB1 - P2)
 
 **Discente:** Diêgo de Araujo Correia
-**UML do Projeto:** https://drive.google.com/file/d/1dxjeuOuJi9NW2dDOQozZ_-yjm7DzAPOZ/view?usp=sharing
 ---
+*UML do Projeto:* https://drive.google.com/file/d/1dxjeuOuJi9NW2dDOQozZ_-yjm7DzAPOZ/view?usp=sharing
 
 ## 1. Descrição Geral do Design Arquitetural
 O sistema foi desenvolvido focando na separação de responsabilidades. O design isola as classes que apenas guardam dados (Modelos) das classes que executam as regras de negócio (Managers) e da lógica de salvamento de arquivos (Persistência). Essa abordagem garante baixo acoplamento e alta coesão, permitindo que alterações nas regras de validação não quebrem a estrutura dos dados. Toda a comunicação com os testes do EasyAccept é feita por meio de uma única classe central, protegendo o encapsulamento do sistema.
