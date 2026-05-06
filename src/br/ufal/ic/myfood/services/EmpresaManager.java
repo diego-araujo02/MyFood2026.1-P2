@@ -1,15 +1,15 @@
 package br.ufal.ic.myfood.services;
 
 import br.ufal.ic.myfood.models.Empresa;
-
+import br.ufal.ic.myfood.models.Mercado;
+import br.ufal.ic.myfood.models.Restaurante;
+import br.ufal.ic.myfood.models.Farmacia;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class EmpresaManager {
-
-    // Usamos LinkedHashMap para garantir a ordem cronológica de criação
     private Map<Integer, Empresa> empresas;
     private int proximoId;
 
@@ -18,84 +18,56 @@ public class EmpresaManager {
         this.proximoId = 1;
     }
 
-    public Map<Integer, Empresa> getEmpresas() { return empresas; }
-    public void setEmpresas(Map<Integer, Empresa> empresas) { this.empresas = empresas; }
-    public int getProximoId() { return proximoId; }
-    public void setProximoId(int proximoId) { this.proximoId = proximoId; }
+    public int criarRestaurante(int dono, String nome, String endereco, String tipoCozinha) throws Exception {
+        Restaurante r = new Restaurante(proximoId, dono, nome, endereco, tipoCozinha);
+        validarUnicidade(dono, nome, endereco);
+        empresas.put(proximoId, r);
+        return proximoId++;
+    }
 
+    public int criarMercado(int dono, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
+        Mercado m = new Mercado(proximoId, dono, nome, endereco, abre, fecha, tipoMercado);
+        validarUnicidade(dono, nome, endereco);
+        empresas.put(proximoId, m);
+        return proximoId++;
+    }
 
-    public int criarEmpresa(int idDono, String nome, String endereco, String tipoCozinha) throws Exception {
-        for (Empresa e : this.empresas.values()) {
+    public int criarFarmacia(int dono, String nome, String endereco, boolean aberto24Horas, int numeroFuncionarios) throws Exception {
+        Farmacia f = new Farmacia(proximoId, dono, nome, endereco, aberto24Horas, numeroFuncionarios);
+
+        validarUnicidade(dono, nome, endereco);
+
+        empresas.put(proximoId, f);
+        return proximoId++;
+    }
+
+    private void validarUnicidade(int dono, String nome, String endereco) throws Exception {
+        for (Empresa e : empresas.values()) {
             if (e.getNome().equals(nome)) {
-                if (e.getDono() != idDono) {
+                if (e.getDono() != dono) {
                     throw new Exception("Empresa com esse nome ja existe");
                 } else if (e.getEndereco().equals(endereco)) {
                     throw new Exception("Proibido cadastrar duas empresas com o mesmo nome e local");
                 }
             }
         }
-
-        Empresa novaEmpresa = new Empresa(proximoId, idDono, nome, endereco, tipoCozinha);
-        this.empresas.put(proximoId, novaEmpresa);
-        int idGerado = proximoId;
-        proximoId++;
-
-        return idGerado;
     }
 
-    public String getEmpresasDoUsuario(int idDono) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{[");
+    public void alterarFuncionamento(int mercadoId, String abre, String fecha) throws Exception {
+        Empresa e = empresas.get(mercadoId);
 
-        boolean primeiro = true;
-        for (Empresa e : this.empresas.values()) {
-            if (e.getDono() == idDono) {
-                if (!primeiro) {
-                    sb.append(", ");
-                }
-                sb.append("[").append(e.getNome()).append(", ").append(e.getEndereco()).append("]");
-                primeiro = false;
-            }
-        }
-
-        sb.append("]}");
-        return sb.toString();
-    }
-
-    public int getIdEmpresa(int idDono, String nome, int indice) throws Exception {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new Exception("Nome invalido");
-        }
-        if (indice < 0) {
-            throw new Exception("Indice invalido");
-        }
-
-        List<Empresa> matches = new ArrayList<>();
-        for (Empresa e : this.empresas.values()) {
-            if (e.getDono() == idDono && e.getNome().equals(nome)) {
-                matches.add(e);
-            }
-        }
-
-        if (matches.isEmpty()) {
-            throw new Exception("Nao existe empresa com esse nome");
-        }
-        if (indice >= matches.size()) {
-            throw new Exception("Indice maior que o esperado");
-        }
-
-        return matches.get(indice).getId();
-    }
-
-    public String getAtributoEmpresa(int idEmpresa, String atributo) throws Exception {
-        Empresa e = this.empresas.get(idEmpresa);
         if (e == null) {
             throw new Exception("Empresa nao cadastrada");
         }
 
-        if (atributo == null || atributo.trim().isEmpty()) {
-            throw new Exception("Atributo invalido");
-        }
+        e.alterarHorario(abre, fecha);
+    }
+
+    public String getAtributoEmpresa(int id, String atributo) throws Exception {
+        Empresa e = empresas.get(id);
+
+        if (e == null) throw new Exception("Empresa nao cadastrada");
+        if (atributo == null || atributo.trim().isEmpty()) throw new Exception("Atributo invalido");
 
         if (atributo.equals("dono")) {
             return String.valueOf(e.getDono());
@@ -104,8 +76,52 @@ public class EmpresaManager {
         return e.getAtributo(atributo);
     }
 
+    public int getIdEmpresa(int idDono, String nome, int indice) throws Exception {
+        if (nome == null || nome.trim().isEmpty()) throw new Exception("Nome invalido");
+        if (indice < 0) throw new Exception("Indice invalido");
+
+        List<Integer> encontradas = new ArrayList<>();
+        for (Empresa e : empresas.values()) {
+            if (e.getDono() == idDono && e.getNome().equals(nome)) {
+                encontradas.add(e.getId());
+            }
+        }
+
+        if (encontradas.isEmpty()) throw new Exception("Nao existe empresa com esse nome");
+        if (indice >= encontradas.size()) throw new Exception("Indice maior que o esperado");
+
+        return encontradas.get(indice);
+    }
+
+    public String getEmpresasDoUsuario(int idDono) {
+        List<String> lista = new ArrayList<>();
+        for (Empresa e : empresas.values()) {
+            if (e.getDono() == idDono) {
+                lista.add("[" + e.getNome() + ", " + e.getEndereco() + "]");
+            }
+        }
+        return "{[" + String.join(", ", lista) + "]}";
+    }
+
+    public void adicionarEntregadorNaEmpresa(int empresaId, int entregadorId) {
+        getEmpresas().get(empresaId).adicionarEntregador(entregadorId);
+    }
+
+    public List<Integer> getEntregadoresDaEmpresa(int empresaId) {
+        return new ArrayList<>(empresas.get(empresaId).getEntregadores());
+    }
+
+    public boolean isFarmacia(int idEmpresa) {
+        return empresas.get(idEmpresa).isFarmacia();
+    }
+
     public void zerarSistema() {
         this.empresas.clear();
         this.proximoId = 1;
     }
+
+    public Map<Integer, Empresa> getEmpresas() { return empresas; }
+    public void setEmpresas(Map<Integer, Empresa> empresas) { this.empresas = empresas; }
+    public int getProximoId() { return proximoId; }
+    public void setProximoId(int proximoId) { this.proximoId = proximoId; }
 }

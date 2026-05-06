@@ -39,6 +39,11 @@ public class Dono extends Usuario{
     public void verificarPermissaoEmpresa() throws Exception {
     }
 
+    @Override
+    public boolean isDono() {
+        return true;
+    }
+
     public String getCpf() {
         return cpf;
     }

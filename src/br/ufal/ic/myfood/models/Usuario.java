@@ -1,5 +1,6 @@
 package br.ufal.ic.myfood.models;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Usuario {
@@ -49,6 +50,22 @@ public class Usuario {
 
     public void verificarPermissaoEmpresa() throws Exception {
         throw new Exception("Usuario nao pode criar uma empresa");
+    }
+
+    public boolean isDono() {
+        return false;
+    }
+
+    public boolean isEntregador() {
+        return false;
+    }
+
+    public List<Integer> getEmpresas() throws Exception {
+        throw new Exception("Usuario nao e um entregador");
+    }
+
+    public void adicionarEmpresa(int empresaId) throws Exception {
+        throw new Exception("Usuario nao e um entregador");
     }
 
     public String getNome() {

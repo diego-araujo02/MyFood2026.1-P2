@@ -110,6 +110,33 @@ public class PedidoManager {
         return p;
     }
 
+    public void liberarPedido(int numero) throws Exception {
+        Pedido p = pedidos.get(numero);
+        if (p == null) throw new Exception("Pedido nao existe");
+        if (p.getEstado().equals("pronto")) throw new Exception("Pedido ja liberado");
+        if (!p.getEstado().equals("preparando")) throw new Exception("Nao e possivel liberar um produto que nao esta sendo preparado");
+
+        p.setEstado("pronto");
+    }
+
+    public String getEstado(int numero) {
+        return pedidos.get(numero).getEstado();
+    }
+
+    public void alterarEstadoPedido(int numero, String novoEstado) {
+        pedidos.get(numero).setEstado(novoEstado);
+    }
+
+    public List<Integer> getPedidosProntos() {
+        List<Integer> prontos = new ArrayList<>();
+        for (Pedido p : pedidos.values()) {
+            if (p.getEstado().equals("pronto")) {
+                prontos.add(p.getNumero());
+            }
+        }
+        return prontos;
+    }
+
     public void zerarSistema() {
         this.pedidos.clear();
         this.proximoNumero = 1;
