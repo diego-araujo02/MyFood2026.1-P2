@@ -3,7 +3,7 @@ package br.ufal.ic.myfood.models;
 import java.util.List;
 import java.util.UUID;
 
-public class Usuario {
+public abstract class Usuario {
     private int id;
     private String nome;
     private String email;
