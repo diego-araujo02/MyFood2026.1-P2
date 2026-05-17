@@ -1,7 +1,8 @@
 package br.ufal.ic.myfood.models;
 
+import br.ufal.ic.myfood.exceptions.*;
+
 import java.util.List;
-import java.util.UUID;
 
 public abstract class Usuario {
     private int id;
@@ -12,18 +13,18 @@ public abstract class Usuario {
 
     public Usuario() {}
 
-    public Usuario(int id, String nome, String email, String senha, String endereco) throws Exception {
+    public Usuario(int id, String nome, String email, String senha, String endereco) throws MyFoodException {
         if (nome == null || nome.isEmpty()) {
-            throw new Exception("Nome invalido");
+            throw new UsuarioInvalidoException("Nome invalido");
         }
         if (email == null || email.isEmpty() || !email.contains("@")) {
-                throw new Exception("Email invalido");
+                throw new UsuarioInvalidoException("Email invalido");
         }
         if (senha == null || senha.isEmpty()) {
-            throw new Exception("Senha invalido");
+            throw new UsuarioInvalidoException("Senha invalido");
         }
         if (endereco == null || endereco.isEmpty()) {
-            throw new Exception("Endereco invalido");
+            throw new UsuarioInvalidoException("Endereco invalido");
         }
 
         this.nome = nome;
@@ -33,7 +34,7 @@ public abstract class Usuario {
         this.id = id;
     }
 
-    public String getAtributo(String atributo) throws Exception {
+    public String getAtributo(String atributo) throws MyFoodException {
         switch (atributo) {
             case "nome":
                 return this.nome;
@@ -44,12 +45,12 @@ public abstract class Usuario {
             case "endereco":
                 return this.endereco;
             default:
-                throw new Exception("Atributo invalido");
+                throw new AtributoInvalidoException("Atributo invalido");
         }
     }
 
-    public void verificarPermissaoEmpresa() throws Exception {
-        throw new Exception("Usuario nao pode criar uma empresa");
+    public void verificarPermissaoEmpresa() throws MyFoodException {
+        throw new PermissaoNegadaException("Usuario nao pode criar uma empresa");
     }
 
     public boolean isDono() {
@@ -60,12 +61,12 @@ public abstract class Usuario {
         return false;
     }
 
-    public List<Integer> getEmpresas() throws Exception {
-        throw new Exception("Usuario nao e um entregador");
+    public List<Integer> getEmpresas() throws MyFoodException {
+        throw new PermissaoNegadaException("Usuario nao e um entregador");
     }
 
-    public void adicionarEmpresa(int empresaId) throws Exception {
-        throw new Exception("Usuario nao e um entregador");
+    public void adicionarEmpresa(int empresaId) throws MyFoodException {
+        throw new PermissaoNegadaException("Usuario nao e um entregador");
     }
 
     public String getNome() {

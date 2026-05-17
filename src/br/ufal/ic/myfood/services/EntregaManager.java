@@ -1,6 +1,7 @@
 package br.ufal.ic.myfood.services;
 
 import br.ufal.ic.myfood.models.Entrega;
+import br.ufal.ic.myfood.exceptions.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,13 +20,13 @@ public class EntregaManager {
         return proximoId++;
     }
 
-    public int getIdEntrega(int pedido) throws Exception {
+    public int getIdEntrega(int pedido) throws MyFoodException {
         for (Entrega e : entregas.values()) {
             if (e.getIdPedido() == pedido) {
                 return e.getId();
             }
         }
-        throw new Exception("Nao existe entrega com esse id");
+        throw new EntregaNaoEncontradaException("Nao existe entrega com esse id");
     }
 
     public Entrega getEntrega(int id) {

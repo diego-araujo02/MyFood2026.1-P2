@@ -1,13 +1,15 @@
 package br.ufal.ic.myfood.models;
 
+import br.ufal.ic.myfood.exceptions.*;
+
 public class Dono extends Usuario{
     private String cpf;
 
-    public Dono(int id, String nome, String email, String senha, String endereco, String cpf) throws Exception {
+    public Dono(int id, String nome, String email, String senha, String endereco, String cpf) throws MyFoodException {
         super(id, nome, email, senha, endereco);
 
         if (cpf == null || cpf.trim().isEmpty() || cpf.length() != 14) {
-            throw new Exception("CPF invalido");
+            throw new UsuarioInvalidoException("CPF invalido");
         }
 
         this.cpf = cpf;
@@ -18,7 +20,7 @@ public class Dono extends Usuario{
     }
 
     @Override
-    public String getAtributo(String atributo) throws Exception{
+    public String getAtributo(String atributo) throws MyFoodException{
         switch (atributo){
             case "nome":
                 return super.getAtributo(atributo);
@@ -31,12 +33,12 @@ public class Dono extends Usuario{
             case "cpf":
                 return this.cpf;
             default:
-                throw new Exception("Atributo invalido");
+                throw new AtributoInvalidoException("Atributo invalido");
         }
     }
 
     @Override
-    public void verificarPermissaoEmpresa() throws Exception {
+    public void verificarPermissaoEmpresa() throws MyFoodException {
     }
 
     @Override

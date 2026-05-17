@@ -1,5 +1,7 @@
 package br.ufal.ic.myfood.models;
 
+import br.ufal.ic.myfood.exceptions.*;
+
 public class Mercado extends Empresa {
     private String abre;
     private String fecha;
@@ -7,15 +9,15 @@ public class Mercado extends Empresa {
 
     public Mercado() {}
 
-    public Mercado(int id, int dono, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
+    public Mercado(int id, int dono, String nome, String endereco, String abre, String fecha, String tipoMercado) throws MyFoodException {
         super(id, dono, nome, endereco);
 
         if (abre == null || fecha == null) {
-            throw new Exception("Horario invalido");
+            throw new HorarioInvalidoException("Horario invalido");
         }
 
         if (!abre.matches("\\d{2}:\\d{2}") || !fecha.matches("\\d{2}:\\d{2}")) {
-            throw new Exception("Formato de hora invalido");
+            throw new HorarioInvalidoException("Formato de hora invalido");
         }
 
         String[] a = abre.split(":");
@@ -26,15 +28,15 @@ public class Mercado extends Empresa {
         int mF = Integer.parseInt(f[1]);
 
         if (hA > 23 || mA > 59 || hF > 23 || mF > 59) {
-            throw new Exception("Horario invalido");
+            throw new HorarioInvalidoException("Horario invalido");
         }
 
         if ((hA * 60 + mA) >= (hF * 60 + mF)) {
-            throw new Exception("Horario invalido");
+            throw new HorarioInvalidoException("Horario invalido");
         }
 
         if (tipoMercado == null || tipoMercado.trim().isEmpty()) {
-            throw new Exception("Tipo de mercado invalido");
+            throw new EmpresaInvalidaException("Tipo de mercado invalido");
         }
 
         this.abre = abre;
@@ -52,24 +54,24 @@ public class Mercado extends Empresa {
     public void setTipoMercado(String tipoMercado) { this.tipoMercado = tipoMercado; }
 
     @Override
-    public void alterarHorario(String abre, String fecha) throws Exception {
-        if (abre == null || fecha == null) throw new Exception("Horario invalido");
-        if (!abre.matches("\\d{2}:\\d{2}") || !fecha.matches("\\d{2}:\\d{2}")) throw new Exception("Formato de hora invalido");
+    public void alterarHorario(String abre, String fecha) throws MyFoodException {
+        if (abre == null || fecha == null) throw new HorarioInvalidoException("Horario invalido");
+        if (!abre.matches("\\d{2}:\\d{2}") || !fecha.matches("\\d{2}:\\d{2}")) throw new HorarioInvalidoException("Formato de hora invalido");
 
         String[] a = abre.split(":");
         String[] f = fecha.split(":");
         int hA = Integer.parseInt(a[0]), mA = Integer.parseInt(a[1]);
         int hF = Integer.parseInt(f[0]), mF = Integer.parseInt(f[1]);
 
-        if (hA > 23 || mA > 59 || hF > 23 || mF > 59) throw new Exception("Horario invalido");
-        if ((hA * 60 + mA) >= (hF * 60 + mF)) throw new Exception("Horario invalido");
+        if (hA > 23 || mA > 59 || hF > 23 || mF > 59) throw new HorarioInvalidoException("Horario invalido");
+        if ((hA * 60 + mA) >= (hF * 60 + mF)) throw new HorarioInvalidoException("Horario invalido");
 
         this.abre = abre;
         this.fecha = fecha;
     }
 
     @Override
-    public String getAtributo(String atributo) throws Exception {
+    public String getAtributo(String atributo) throws MyFoodException {
         switch (atributo) {
             case "abre": return this.abre;
             case "fecha": return this.fecha;

@@ -2,6 +2,7 @@ package br.ufal.ic.myfood.services;
 
 import br.ufal.ic.myfood.models.Pedido;
 import br.ufal.ic.myfood.models.Produto;
+import br.ufal.ic.myfood.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,10 +19,10 @@ public class PedidoManager {
         this.proximoNumero = 1;
     }
 
-    public int criarPedido(int cliente, int empresa) throws Exception {
+    public int criarPedido(int cliente, int empresa) throws MyFoodException {
         for (Pedido p : pedidos.values()) {
             if (p.getCliente() == cliente && p.getEmpresa() == empresa && p.getEstado().equals("aberto")) {
-                throw new Exception("Nao e permitido ter dois pedidos em aberto para a mesma empresa");
+                throw new PedidoInvalidoException("Nao e permitido ter dois pedidos em aberto para a mesma empresa");
             }
         }
         Pedido novo = new Pedido(proximoNumero, cliente, empresa);
@@ -29,26 +30,26 @@ public class PedidoManager {
         return proximoNumero++;
     }
 
-    public void adicionarProduto(int numero, Produto produto) throws Exception {
+    public void adicionarProduto(int numero, Produto produto) throws MyFoodException {
         Pedido p = pedidos.get(numero);
 
         if (p == null) {
-            throw new Exception("Nao existe pedido em aberto");
+            throw new PedidoNaoEncontradoException("Nao existe pedido em aberto");
         }
         if (!p.getEstado().equals("aberto")) {
-            throw new Exception("Nao e possivel adcionar produtos a um pedido fechado");
+            throw new PedidoInvalidoException("Nao e possivel adcionar produtos a um pedido fechado");
         }
         if (produto.getEmpresa() != p.getEmpresa()) {
-            throw new Exception("O produto nao pertence a essa empresa");
+            throw new ProdutoInvalidoException("O produto nao pertence a essa empresa");
         }
 
         p.getProdutos().add(produto);
     }
 
-    public void removerProduto(int numero, String nomeProduto) throws Exception {
+    public void removerProduto(int numero, String nomeProduto) throws MyFoodException {
         Pedido p = getPedidoInterno(numero);
         if (!p.getEstado().equals("aberto")) {
-            throw new Exception("Nao e possivel remover produtos de um pedido fechado");
+            throw new PedidoInvalidoException("Nao e possivel remover produtos de um pedido fechado");
         }
 
         boolean removido = false;
@@ -59,23 +60,23 @@ public class PedidoManager {
                 break;
             }
         }
-        if (!removido) throw new Exception("Produto nao encontrado");
+        if (!removido) throw new ProdutoNaoEncontradoException("Produto nao encontrado");
     }
 
-    public void fecharPedido(int numero) throws Exception {
+    public void fecharPedido(int numero) throws MyFoodException {
         Pedido p = getPedidoInterno(numero);
         p.setEstado("preparando");
     }
 
-    public int getIdClienteDoPedido(int numero) throws Exception {
+    public int getIdClienteDoPedido(int numero) throws MyFoodException {
         return getPedidoInterno(numero).getCliente();
     }
 
-    public int getIdEmpresaDoPedido(int numero) throws Exception {
+    public int getIdEmpresaDoPedido(int numero) throws MyFoodException {
         return getPedidoInterno(numero).getEmpresa();
     }
 
-    public String getAtributoPedido(int numero, String atributo) throws Exception {
+    public String getAtributoPedido(int numero, String atributo) throws MyFoodException {
         Pedido p = getPedidoInterno(numero);
         switch (atributo) {
             case "estado":
@@ -87,11 +88,11 @@ public class PedidoManager {
                 for (Produto prod : p.getProdutos()) nomes.add(prod.getNome());
                 return "{[" + String.join(", ", nomes) + "]}";
             default:
-                throw new Exception("Atributo nao existe");
+                throw new AtributoInvalidoException("Atributo nao existe");
         }
     }
 
-    public int getNumeroPedido(int cliente, int empresa, int indice) throws Exception {
+    public int getNumeroPedido(int cliente, int empresa, int indice) throws MyFoodException {
         List<Integer> encontrados = new ArrayList<>();
         for (Pedido p : pedidos.values()) {
             if (p.getCliente() == cliente && p.getEmpresa() == empresa) {
@@ -99,22 +100,22 @@ public class PedidoManager {
             }
         }
         if (indice < 0 || indice >= encontrados.size()) {
-            throw new Exception("Pedido nao encontrado");
+            throw new PedidoNaoEncontradoException("Pedido nao encontrado");
         }
         return encontrados.get(indice);
     }
 
-    private Pedido getPedidoInterno(int numero) throws Exception {
+    private Pedido getPedidoInterno(int numero) throws MyFoodException {
         Pedido p = pedidos.get(numero);
-        if (p == null) throw new Exception("Pedido nao encontrado");
+        if (p == null) throw new PedidoNaoEncontradoException("Pedido nao encontrado");
         return p;
     }
 
-    public void liberarPedido(int numero) throws Exception {
+    public void liberarPedido(int numero) throws MyFoodException {
         Pedido p = pedidos.get(numero);
-        if (p == null) throw new Exception("Pedido nao existe");
-        if (p.getEstado().equals("pronto")) throw new Exception("Pedido ja liberado");
-        if (!p.getEstado().equals("preparando")) throw new Exception("Nao e possivel liberar um produto que nao esta sendo preparado");
+        if (p == null) throw new PedidoNaoEncontradoException("Pedido nao existe");
+        if (p.getEstado().equals("pronto")) throw new EstadoPedidoInvalidoException("Pedido ja liberado");
+        if (!p.getEstado().equals("preparando")) throw new EstadoPedidoInvalidoException("Nao e possivel liberar um produto que nao esta sendo preparado");
 
         p.setEstado("pronto");
     }

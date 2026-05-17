@@ -1,5 +1,7 @@
 package br.ufal.ic.myfood.models;
 
+import br.ufal.ic.myfood.exceptions.*;
+
 import java.util.Locale;
 
 public class Produto {
@@ -11,7 +13,7 @@ public class Produto {
 
     public Produto(){}
 
-    public Produto(int id, int empresa, String nome, float valor, String categoria) throws Exception{
+    public Produto(int id, int empresa, String nome, float valor, String categoria) throws MyFoodException{
         this.id = id;
         this.nome = nome;
         this.valor = valor;
@@ -19,7 +21,7 @@ public class Produto {
         this.empresa = empresa;
     }
 
-    public String getAtributo(String atributo) throws Exception{
+    public String getAtributo(String atributo) throws MyFoodException {
         switch (atributo){
             case "id":
                 return String.valueOf(this.id);
@@ -30,7 +32,7 @@ public class Produto {
             case "categoria":
                 return this.categoria;
             default:
-                throw new Exception("Atributo nao existe");
+                throw new AtributoInvalidoException("Atributo nao existe");
         }
     }
 

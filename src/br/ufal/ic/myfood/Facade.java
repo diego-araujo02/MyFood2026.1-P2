@@ -1,6 +1,7 @@
 package br.ufal.ic.myfood;
 
 import br.ufal.ic.myfood.services.*;
+import br.ufal.ic.myfood.exceptions.*;
 import br.ufal.ic.myfood.utils.PersistenciaXML;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,31 +42,29 @@ public class Facade {
         encerrarSistema();
     }
 
-    public String getAtributoUsuario(int id, String atributo) throws Exception {
+    public String getAtributoUsuario(int id, String atributo) throws MyFoodException {
         return this.userManager.getAtributoUsuario(id, atributo);
     }
 
-    public void criarUsuario(String nome, String email, String senha, String endereco)
-            throws Exception {
+    public void criarUsuario(String nome, String email, String senha, String endereco) throws MyFoodException {
         this.userManager.criarUsuario(nome, email, senha, endereco);
     }
 
-    public void criarUsuario(String nome, String email, String senha, String endereco, String cpf)
-            throws Exception {
+    public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) throws MyFoodException {
         this.userManager.criarUsuario(nome, email, senha, endereco, cpf);
     }
 
-    public void criarUsuario(String nome, String email, String senha, String endereco, String veiculo, String placa) throws Exception {
+    public void criarUsuario(String nome, String email, String senha, String endereco, String veiculo, String placa) throws MyFoodException {
         userManager.criarEntregador(nome, email, senha, endereco, veiculo, placa);
     }
 
-    public void cadastrarEntregador(int empresa, int entregador) throws Exception {
+    public void cadastrarEntregador(int empresa, int entregador) throws MyFoodException {
         userManager.validarSeEEntregador(entregador);
         empresaManager.adicionarEntregadorNaEmpresa(empresa, entregador);
         userManager.adicionarEmpresaAoEntregador(entregador, empresa);
     }
 
-    public String getEntregadores(int empresa) throws Exception {
+    public String getEntregadores(int empresa) throws MyFoodException {
         List<Integer> ids = empresaManager.getEntregadoresDaEmpresa(empresa);
         List<String> emails = new ArrayList<>();
 
@@ -75,7 +74,7 @@ public class Facade {
         return "{[" + String.join(", ", emails) + "]}";
     }
 
-    public String getEmpresas(int entregador) throws Exception {
+    public String getEmpresas(int entregador) throws MyFoodException {
         userManager.validarSeEEntregador(entregador);
 
         List<Integer> ids = userManager.getEmpresasDoEntregador(entregador);
@@ -89,7 +88,7 @@ public class Facade {
         return "{[" + String.join(", ", dados) + "]}";
     }
 
-    public int login(String email, String senha) throws Exception {
+    public int login(String email, String senha) throws MyFoodException {
         return this.userManager.login(email, senha);
     }
 
@@ -101,51 +100,51 @@ public class Facade {
         PersistenciaXML.salvar(this.entregaManager, "data/entregas.xml");
     }
 
-    private void validarParametrosBasicos(String tipoEmpresa, String nome, String endereco) throws Exception {
+    private void validarParametrosBasicos(String tipoEmpresa, String nome, String endereco) throws MyFoodException {
         if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
-            throw new Exception("Tipo de empresa invalido");
+            throw new EmpresaInvalidaException("Tipo de empresa invalido");
         }
         if (nome == null || nome.trim().isEmpty()) {
-            throw new Exception("Nome invalido");
+            throw new EmpresaInvalidaException("Nome invalido");
         }
         if (endereco == null || endereco.trim().isEmpty()) {
-            throw new Exception("Endereco da empresa invalido");
+            throw new EmpresaInvalidaException("Endereco da empresa invalido");
         }
     }
 
-    public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, String tipoCozinha) throws Exception {
+    public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, String tipoCozinha) throws MyFoodException {
         validarParametrosBasicos(tipoEmpresa, nome, endereco);
         userManager.validarSeEDono(dono);
         return empresaManager.criarRestaurante(dono, nome, endereco, tipoCozinha);
     }
 
-    public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
+    public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, String abre, String fecha, String tipoMercado) throws MyFoodException {
         validarParametrosBasicos(tipoEmpresa, nome, endereco);
         userManager.validarSeEDono(dono);
         return empresaManager.criarMercado(dono, nome, endereco, abre, fecha, tipoMercado);
     }
 
-    public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, boolean aberto24Horas, int numeroFuncionarios) throws Exception {
+    public int criarEmpresa(String tipoEmpresa, int dono, String nome, String endereco, boolean aberto24Horas, int numeroFuncionarios) throws MyFoodException {
         validarParametrosBasicos(tipoEmpresa, nome, endereco);
         userManager.validarSeEDono(dono);
 
         return empresaManager.criarFarmacia(dono, nome, endereco, aberto24Horas, numeroFuncionarios);
     }
 
-    public void alterarFuncionamento(int mercado, String abre, String fecha) throws Exception {
+    public void alterarFuncionamento(int mercado, String abre, String fecha) throws MyFoodException {
         empresaManager.alterarFuncionamento(mercado, abre, fecha);
     }
 
-    public String getEmpresasDoUsuario(int idDono) throws Exception {
+    public String getEmpresasDoUsuario(int idDono) throws MyFoodException {
         this.userManager.verificarPermissao(idDono);
         return this.empresaManager.getEmpresasDoUsuario(idDono);
     }
 
-    public int getIdEmpresa(int idDono, String nome, int indice) throws Exception {
+    public int getIdEmpresa(int idDono, String nome, int indice) throws MyFoodException {
         return this.empresaManager.getIdEmpresa(idDono, nome, indice);
     }
 
-    public String getAtributoEmpresa(int empresa, String atributo) throws Exception {
+    public String getAtributoEmpresa(int empresa, String atributo) throws MyFoodException {
         String resultado = this.empresaManager.getAtributoEmpresa(empresa, atributo);
         if (atributo.equals("dono")) {
             int idDono = Integer.parseInt(resultado);
@@ -155,15 +154,15 @@ public class Facade {
         return resultado;
     }
 
-    public int criarProduto(int empresa, String nome, float valor, String categoria) throws Exception {
+    public int criarProduto(int empresa, String nome, float valor, String categoria) throws MyFoodException {
         return this.produtoManager.criarProduto(empresa, nome, valor, categoria);
     }
 
-    public void editarProduto(int produto, String nome, float valor, String categoria) throws Exception {
+    public void editarProduto(int produto, String nome, float valor, String categoria) throws MyFoodException {
         this.produtoManager.editarProduto(produto, nome, valor, categoria);
     }
 
-    public String getProduto(String nome, int empresa, String atributo) throws Exception {
+    public String getProduto(String nome, int empresa, String atributo) throws MyFoodException {
         String resultado = this.produtoManager.getProduto(nome, empresa, atributo);
 
         if (atributo.equals("empresa")) {
@@ -174,12 +173,12 @@ public class Facade {
         return resultado;
     }
 
-    public String listarProdutos(int empresa) throws Exception {
+    public String listarProdutos(int empresa) throws MyFoodException {
         try {
             this.empresaManager.getAtributoEmpresa(empresa, "nome");
-        } catch (Exception e) {
+        } catch (MyFoodException e) {
             if (e.getMessage().equals("Empresa nao cadastrada")) {
-                throw new Exception("Empresa nao encontrada");
+                throw new EmpresaNaoEncontradaException("Empresa nao encontrada");
             }
             throw e;
         }
@@ -187,25 +186,24 @@ public class Facade {
         return this.produtoManager.listarProdutos(empresa);
     }
 
-    public int criarPedido(int cliente, int empresa) throws Exception {
-        // Sem instanceof!
+    public int criarPedido(int cliente, int empresa) throws MyFoodException {
         if (userManager.isDono(cliente)) {
-            throw new Exception("Dono de empresa nao pode fazer um pedido");
+            throw new PermissaoNegadaException("Dono de empresa nao pode fazer um pedido");
         }
         return pedidoManager.criarPedido(cliente, empresa);
     }
 
-    public int getNumeroPedido(int cliente, int empresa, int indice) throws Exception {
+    public int getNumeroPedido(int cliente, int empresa, int indice) throws MyFoodException {
         return pedidoManager.getNumeroPedido(cliente, empresa, indice);
     }
 
-    public void adicionarProduto(int numero, int produtoId) throws Exception {
+    public void adicionarProduto(int numero, int produtoId) throws MyFoodException {
         pedidoManager.adicionarProduto(numero, produtoManager.getProdutoInterno(produtoId));
     }
 
-    public String getPedidos(int numero, String atributo) throws Exception {
+    public String getPedidos(int numero, String atributo) throws MyFoodException {
         if (atributo == null || atributo.trim().isEmpty()) {
-            throw new Exception("Atributo invalido");
+            throw new AtributoInvalidoException("Atributo invalido");
         }
 
         if (atributo.equals("cliente")) {
@@ -220,31 +218,30 @@ public class Facade {
         return pedidoManager.getAtributoPedido(numero, atributo);
     }
 
-    public void fecharPedido(int numero) throws Exception {
+    public void fecharPedido(int numero) throws MyFoodException {
         pedidoManager.fecharPedido(numero);
     }
 
-    public void removerProduto(int pedido, String nomeProduto) throws Exception {
+    public void removerProduto(int pedido, String nomeProduto) throws MyFoodException {
         if (nomeProduto == null || nomeProduto.trim().isEmpty()) {
-            throw new Exception("Produto invalido");
+            throw new ProdutoInvalidoException("Produto invalido");
         }
         pedidoManager.removerProduto(pedido, nomeProduto);
     }
 
-    public void liberarPedido(int numero) throws Exception {
+    public void liberarPedido(int numero) throws MyFoodException {
         pedidoManager.liberarPedido(numero);
     }
 
-    public int obterPedido(int entregador) throws Exception {
+    public int obterPedido(int entregador) throws MyFoodException {
         userManager.validarSeEEntregador(entregador);
 
         List<Integer> empresasEntregador = userManager.getEmpresasDoEntregador(entregador);
-        if (empresasEntregador.isEmpty()) throw new Exception("Entregador nao estar em nenhuma empresa.");
+        if (empresasEntregador.isEmpty()) throw new EntregaInvalidaException("Entregador nao estar em nenhuma empresa.");
 
         int idPedidoFarmacia = -1;
         int idPedidoOutro = -1;
 
-        // A Facade orquestra o cruzamento de dados entre os Managers sem tocar nos Models
         List<Integer> pedidosProntos = pedidoManager.getPedidosProntos();
 
         for (int idPedido : pedidosProntos) {
@@ -262,20 +259,20 @@ public class Facade {
         if (idPedidoFarmacia != -1) return idPedidoFarmacia;
         if (idPedidoOutro != -1) return idPedidoOutro;
 
-        throw new Exception("Nao existe pedido para entrega");
+        throw new EstadoPedidoInvalidoException("Nao existe pedido para entrega");
     }
 
-    public int criarEntrega(int pedido, int entregador, String destino) throws Exception {
+    public int criarEntrega(int pedido, int entregador, String destino) throws MyFoodException {
         if (!pedidoManager.getEstado(pedido).equals("pronto")) {
-            throw new Exception("Pedido nao esta pronto para entrega");
+            throw new EstadoPedidoInvalidoException("Pedido nao esta pronto para entrega");
         }
 
         if (!userManager.isEntregadorValido(entregador)) {
-            throw new Exception("Nao e um entregador valido");
+            throw new PermissaoNegadaException("Nao e um entregador valido");
         }
 
         if (userManager.isEntregadorEmEntrega(entregador)) {
-            throw new Exception("Entregador ainda em entrega");
+            throw new EntregaInvalidaException("Entregador ainda em entrega");
         }
 
         int idCliente = pedidoManager.getIdClienteDoPedido(pedido);
@@ -292,9 +289,9 @@ public class Facade {
         return entregaManager.criarEntrega(idCliente, idEmpresa, pedido, entregador, destinoFinal);
     }
 
-    public String getEntrega(int id, String atributo) throws Exception {
-        if (atributo == null || atributo.trim().isEmpty()) throw new Exception("Atributo invalido");
-        if (!entregaManager.existeEntrega(id)) throw new Exception("Nao existe entrega com esse id");
+    public String getEntrega(int id, String atributo) throws MyFoodException {
+        if (atributo == null || atributo.trim().isEmpty()) throw new AtributoInvalidoException("Atributo invalido");
+        if (!entregaManager.existeEntrega(id)) throw new EntregaNaoEncontradaException("Nao existe entrega com esse id");
 
         switch (atributo) {
             case "cliente":
@@ -310,16 +307,16 @@ public class Facade {
             case "produtos":
                 return getPedidos(entregaManager.getIdPedidoDaEntrega(id), "produtos");
             default:
-                throw new Exception("Atributo nao existe");
+                throw new AtributoInvalidoException("Atributo nao existe");
         }
     }
 
-    public int getIdEntrega(int pedido) throws Exception {
+    public int getIdEntrega(int pedido) throws MyFoodException {
         return entregaManager.getIdEntrega(pedido);
     }
 
-    public void entregar(int entrega) throws Exception {
-        if (!entregaManager.existeEntrega(entrega)) throw new Exception("Nao existe nada para ser entregue com esse id");
+    public void entregar(int entrega) throws MyFoodException {
+        if (!entregaManager.existeEntrega(entrega)) throw new EntregaNaoEncontradaException("Nao existe nada para ser entregue com esse id");
 
         int idPedido = entregaManager.getIdPedidoDaEntrega(entrega);
         pedidoManager.alterarEstadoPedido(idPedido, "entregue");

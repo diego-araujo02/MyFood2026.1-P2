@@ -1,6 +1,7 @@
 package br.ufal.ic.myfood.services;
 
 import br.ufal.ic.myfood.models.Produto;
+import br.ufal.ic.myfood.exceptions.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,18 +16,18 @@ public class ProdutoManager {
         this.proximoId = 1;
     }
 
-    public void validaProduto(String nome, float valor, String categoria) throws Exception {
-        if (nome == null || nome.trim().isEmpty()) throw new Exception("Nome invalido");
-        if (valor < 0) throw new Exception("Valor invalido");
-        if (categoria == null || categoria.trim().isEmpty()) throw new Exception("Categoria invalido");
+    public void validaProduto(String nome, float valor, String categoria) throws MyFoodException {
+        if (nome == null || nome.trim().isEmpty()) throw new ProdutoInvalidoException("Nome invalido");
+        if (valor < 0) throw new ProdutoInvalidoException("Valor invalido");
+        if (categoria == null || categoria.trim().isEmpty()) throw new ProdutoInvalidoException("Categoria invalido");
     }
 
-    public int criarProduto(int empresa, String nome, float valor, String categoria) throws Exception{
+    public int criarProduto(int empresa, String nome, float valor, String categoria) throws MyFoodException {
         validaProduto(nome, valor, categoria);
 
         for (Produto p : produtos.values()) {
             if (p.getNome().equals(nome) && p.getEmpresa() == empresa){
-                throw new Exception("Ja existe um produto com esse nome para essa empresa");
+                throw new ProdutoJaExisteException("Ja existe um produto com esse nome para essa empresa");
             }
         }
 
@@ -38,11 +39,11 @@ public class ProdutoManager {
         return idGerado;
     }
 
-    public void editarProduto(int idProduto, String nome, float valor, String categoria) throws Exception{
+    public void editarProduto(int idProduto, String nome, float valor, String categoria) throws MyFoodException {
         Produto p = produtos.get(idProduto);
 
         if (p == null){
-            throw new Exception("Produto nao cadastrado");
+            throw new ProdutoNaoEncontradoException("Produto nao cadastrado");
         }
 
         validaProduto(nome, valor, categoria);
@@ -52,23 +53,23 @@ public class ProdutoManager {
         p.setCategoria(categoria);
     }
 
-    public Produto getProdutoInterno(String nome, int empresa) throws Exception{
+    public Produto getProdutoInterno(String nome, int empresa) throws MyFoodException {
         for (Produto p : produtos.values()) {
             if (p.getNome().equals(nome) && p.getEmpresa() == empresa){
                 return p;
             }
         }
-        throw new Exception("Produto nao encontrado");
+        throw new ProdutoNaoEncontradoException("Produto nao encontrado");
     }
-    public Produto getProdutoInterno(int id) throws Exception {
+    public Produto getProdutoInterno(int id) throws MyFoodException {
         Produto p = this.produtos.get(id);
         if (p == null) {
-            throw new Exception("Produto nao encontrado");
+            throw new ProdutoNaoEncontradoException("Produto nao encontrado");
         }
         return p;
     }
 
-    public String getProduto(String nome, int empresa, String atributo) throws Exception {
+    public String getProduto(String nome, int empresa, String atributo) throws MyFoodException {
         Produto p = getProdutoInterno(nome, empresa);
 
         if (atributo.equals("empresa")) {
@@ -99,9 +100,9 @@ public class ProdutoManager {
         return sb.toString();
     }
 
-    public Produto getProdutoPorId(int id) throws Exception {
+    public Produto getProdutoPorId(int id) throws MyFoodException {
         Produto p = produtos.get(id);
-        if (p == null) throw new Exception("Produto nao encontrado");
+        if (p == null) throw new ProdutoNaoEncontradoException("Produto nao encontrado");
         return p;
     }
 
@@ -109,7 +110,6 @@ public class ProdutoManager {
         this.produtos.clear();
         this.proximoId = 1;
     }
-
 
     public Map<Integer, Produto> getProdutos() {
         return produtos;

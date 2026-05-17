@@ -1,5 +1,6 @@
 package br.ufal.ic.myfood.models;
 
+import br.ufal.ic.myfood.exceptions.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +15,11 @@ public class Entregador extends Usuario {
         this.empresas = new ArrayList<>();
     }
 
-    public Entregador(int id, String nome, String email, String senha, String endereco, String veiculo, String placa) throws Exception {
+    public Entregador(int id, String nome, String email, String senha, String endereco, String veiculo, String placa) throws MyFoodException {
         super(id, nome, email, senha, endereco);
 
-        if (veiculo == null || veiculo.trim().isEmpty()) throw new Exception("Veiculo invalido");
-        if (placa == null || placa.trim().isEmpty()) throw new Exception("Placa invalido");
+        if (veiculo == null || veiculo.trim().isEmpty()) throw new UsuarioInvalidoException("Veiculo invalido");
+        if (placa == null || placa.trim().isEmpty()) throw new UsuarioInvalidoException("Placa invalido");
 
         this.veiculo = veiculo;
         this.placa = placa;
@@ -49,7 +50,7 @@ public class Entregador extends Usuario {
     }
 
     @Override
-    public String getAtributo(String atributo) throws Exception {
+    public String getAtributo(String atributo) throws MyFoodException {
         switch (atributo) {
             case "veiculo": return this.veiculo;
             case "placa": return this.placa;

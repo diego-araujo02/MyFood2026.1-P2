@@ -1,5 +1,7 @@
 package br.ufal.ic.myfood.models;
 
+import br.ufal.ic.myfood.exceptions.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,12 +16,12 @@ public abstract class Empresa {
         this.entregadores = new ArrayList<>();
     }
 
-    public Empresa(int id, int dono, String nome, String endereco) throws Exception{
+    public Empresa(int id, int dono, String nome, String endereco) throws MyFoodException {
         if (nome == null || nome.trim().isEmpty()){
-            throw new Exception("Nome invalido");
+            throw new EmpresaInvalidaException("Nome invalido");
         }
         if (endereco == null || endereco.trim().isEmpty()) {
-            throw new Exception("Endereco da empresa invalido");
+            throw new EmpresaInvalidaException("Endereco da empresa invalido");
         }
         this.id = id;
         this.dono = dono;
@@ -28,8 +30,8 @@ public abstract class Empresa {
         this.entregadores = new ArrayList<>();
     }
 
-    public void alterarHorario(String abre, String fecha) throws Exception {
-        throw new Exception("Nao e um mercado valido");
+    public void alterarHorario(String abre, String fecha) throws MyFoodException {
+        throw new EmpresaInvalidaException("Nao e um mercado valido");
     }
 
     public boolean isFarmacia() { return false; }
@@ -55,14 +57,14 @@ public abstract class Empresa {
         }
     }
 
-    public String getAtributo(String atributo) throws Exception {
+    public String getAtributo(String atributo) throws MyFoodException {
         switch (atributo) {
             case "nome":
                 return this.nome;
             case "endereco":
                 return this.endereco;
             default:
-                throw new Exception("Atributo invalido");
+                throw new AtributoInvalidoException("Atributo invalido");
         }
     }
 }

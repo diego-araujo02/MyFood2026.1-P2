@@ -1,12 +1,14 @@
 package br.ufal.ic.myfood.models;
 
+import br.ufal.ic.myfood.exceptions.*;
+
 public class Farmacia extends Empresa {
     private boolean aberto24Horas;
     private int numeroFuncionarios;
 
     public Farmacia() {}
 
-    public Farmacia(int id, int dono, String nome, String endereco, boolean aberto24Horas, int numeroFuncionarios) throws Exception {
+    public Farmacia(int id, int dono, String nome, String endereco, boolean aberto24Horas, int numeroFuncionarios) throws MyFoodException {
         super(id, dono, nome, endereco);
         this.aberto24Horas = aberto24Horas;
         this.numeroFuncionarios = numeroFuncionarios;
@@ -22,7 +24,7 @@ public class Farmacia extends Empresa {
     public void setNumeroFuncionarios(int numeroFuncionarios) { this.numeroFuncionarios = numeroFuncionarios; }
 
     @Override
-    public String getAtributo(String atributo) throws Exception {
+    public String getAtributo(String atributo) throws MyFoodException {
         switch (atributo) {
             case "aberto24Horas":
                 return String.valueOf(this.aberto24Horas);
